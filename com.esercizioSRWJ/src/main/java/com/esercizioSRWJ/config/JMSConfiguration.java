@@ -1,22 +1,22 @@
 package com.esercizioSRWJ.config;
 
+
 import javax.jms.ConnectionFactory;
-import javax.jms.Queue;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.SimpleMessageConverter;
 
-import com.esercizioSRWJ.validate.RichiestaConsegnaValidate;
+import com.esercizioSRWJ.component.MessageReceiver;
 
 
 @Configuration
+@ComponentScan("com.esercizioSRWJ.component")
 public class JMSConfiguration {
 	
 	private static final String DEFAULT_BROKER_URL = "tcp://localhost:61616";
@@ -25,11 +25,17 @@ public class JMSConfiguration {
 	@Autowired
 	MessageReceiver messageReceiver;
 	
+//	@Autowired
+//	public JMSConfiguration(MessageReceiver messageReceiver) {
+//		this.messageReceiver = messageReceiver;
+//	}
+
 	@Bean
 	public ConnectionFactory connectionFactory() {
 		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
 		connectionFactory.setBrokerURL(DEFAULT_BROKER_URL);
-//		connectionFactory.setTrustedPackages(null);
+//		connectionFactory.setTrustedPackages(Arrays.asList("com.esercizioSRWJ.model"));
+		connectionFactory.setTrustAllPackages(true);
 		return connectionFactory;
 	}
 	
@@ -45,25 +51,4 @@ public class JMSConfiguration {
 	MessageConverter converte() {
 		return new SimpleMessageConverter();
 	}
-	
-//	@Value("tcp://localhost:61616")
-//	private String brokerUrl;
-//	
-//	@Bean
-//	public Queue queue() {
-//		return new ActiveMQQueue ("stanalone.queue");
-//	}
-//	
-//	@Bean
-//	public ActiveMQConnectionFactory activeMQConnectionFactory() {
-//		ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory();
-//		factory.setBrokerURL(brokerUrl);
-//		return factory;
-//	}
-//	
-//	@Bean
-//	public JmsTemplate jmsTemplate() {
-//		return new JmsTemplate(activeMQConnectionFactory());
-//	}
-
 }
