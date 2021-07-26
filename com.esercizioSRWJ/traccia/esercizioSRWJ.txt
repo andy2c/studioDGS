@@ -1,0 +1,47 @@
+Creazione servizio REST\JMS in spring:
+
+RestController:
+
+	PUT: /api/consegne/
+		- inserisce su coda un ogetto di tipo RichiestaConsegna, utilizzando il service iniettato JmsPublisher 
+		"RichiestaConsegna":{
+			"string":"codiceCollo",
+			"double":"peso",
+			"double":"prezzoConsegna"
+			"LocalDateTime":"dtCreation"   //se null valorizzare nel controller staccando un LocalDateTime.now() prima di inserire messaggio in coda
+		}
+
+	GET: /api/consegne/resoconto
+		- recupera da db le consegne salvate e restituisce il seguente dto:
+		"ResocontoConsegne":{
+		"double":"prezzoTotale",
+		"double":"pesoTotale",
+		"List<richiestaConsegna>":"listaConsegne"
+		}
+
+Service:
+
+	JmsPublisher
+		- servizio che prendendo un input una consegna la scrive su coda jms
+
+	ConsegneMDB
+		- MessageDrivenBean, resta in ascolto su coda jms dalla quale riceve
+		 	oggetti di tipo RichiestaConsegna e li salva su postgres
+		 	
+	DbService
+		- espone un metodo che salva su db il payload
+
+Specifiche:
+
+	il nome della coda va recuperato utilizzando SpringConfiguration tramite application.yml
+
+	l'artefatto sarà un war da deployare su wildfly
+
+	utilizzare ActiveMQ come message broker
+
+	creare una classe che gestisca le eccezioni dentro i restController
+
+Plus(non necessario): 
+
+	creare un interceptor per le richieste sull'entrypoint: PUT: /api/consegne/
+	che faccia enrichment del dto valorizzndo la dtCreation
