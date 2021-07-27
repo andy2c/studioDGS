@@ -16,9 +16,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.esercizioSRWJ.component.MessageReceiver;
-import com.esercizioSRWJ.component.MessageSender;
-import com.esercizioSRWJ.config.JMSConfiguration;
 import com.esercizioSRWJ.dto.ResocontoConsegneDTO;
 import com.esercizioSRWJ.exception.AfterDateError;
 import com.esercizioSRWJ.exception.MaxLengthError;
@@ -35,23 +32,21 @@ public class RichiestaConsegnaController {
 	
 	//SETTAGGIO ELEMETI CLASSSE
 	
-//	@Autowired
+
 	private JmsTemplate jmsTemplate;
-//	@Autowired
-//	private Queue queue;
-//	@Autowired
+	private Queue queue;
 	private RichiestaConsegnaService richiestaConsegnaService;
 	private RichiestaConsegnaValidate richiestaConsegnaValidate;
 	
 	
 	@Autowired
 	public RichiestaConsegnaController(JmsTemplate jmsTemplate, 
-//										Queue queue,
+										Queue queue,
 										RichiestaConsegnaService richiestaConsegnaService, 
 										RichiestaConsegnaValidate richiestaConsegnaValidate) {
 		super();
 		this.jmsTemplate = jmsTemplate;
-//		this.queue = queue;
+		this.queue = queue;
 		this.richiestaConsegnaService = richiestaConsegnaService;
 		this.richiestaConsegnaValidate = richiestaConsegnaValidate;
 	}
@@ -70,54 +65,55 @@ public class RichiestaConsegnaController {
 		return ret;
 	}
 	
-//	@RequestMapping(method=RequestMethod.PUT, value ="/resoconto")
-//	public String mettiInCoda(@RequestBody RichiestaConsegna riCon) {
-//		jmsTemplate.convertAndSend(queue, riCon);
-//		return "messaggio aggiunto in coda";
-//	}
+	@RequestMapping(method=RequestMethod.PUT, value ="/resoconto")
+	public String mettiInCoda(@RequestBody RichiestaConsegna riCon) {
+		jmsTemplate.convertAndSend(queue, riCon);
+		return "messaggio aggiunto in coda";
+	}
 	
 	@RequestMapping(method=RequestMethod.GET, value ="/resoconto/{id}")
 	public String mettiInCodaMocked(@PathVariable String id) {
 		RichiestaConsegna riCon = new RichiestaConsegna(id, 10D, 10D);
-//		jmsTemplate.convertAndSend(queue, riCon);
 
-		AbstractApplicationContext context = new AnnotationConfigApplicationContext(JMSConfiguration.class);
-		MessageSender messageSender = context.getBean(MessageSender.class);
-		messageSender.sendMessage(riCon);
-		((AbstractApplicationContext) context).close();
+//		AbstractApplicationContext context = new AnnotationConfigApplicationContext(JMSConfiguration.class);
+//		MessageSender messageSender = context.getBean(MessageSender.class);
+//		messageSender.sendMessage(riCon);
+//		((AbstractApplicationContext) context).close();
+		
+		jmsTemplate.convertAndSend(queue, riCon);
 		return "messaggio aggiunto in coda";
 	}
 	
-	@RequestMapping(method=RequestMethod.GET, value ="/getCoda")
-	public String prendiCodaMocked() {
-		
-		AbstractApplicationContext context = new AnnotationConfigApplicationContext(JMSConfiguration.class);
-		MessageReceiver messageReceiver = (MessageReceiver) context.getBean("messageReceiver");
-		RichiestaConsegna riCon= new RichiestaConsegna();
-		try {
-			riCon = messageReceiver.receiveMessage();
-		} catch (MessageConversionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JMSException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		((AbstractApplicationContext) context).close();
-		try {
-			this.richiestaConsegnaValidate.validate(riCon, true);
-			this.richiestaConsegnaService.save(riCon);
-			return "salvato \""+riCon+"\" nel database";
-		}  catch (RequiredFieldError e) {
-			return e.getDescription(e);
-		} catch (MaxLengthError e) {
-			return e.getDescription(e);
-		} catch (UniqueFieldError e) {
-			return e.getDescription(e);
-		} catch (AfterDateError e) {
-			return e.getDescription(e);
-		} 
-	}
+//	@RequestMapping(method=RequestMethod.GET, value ="/getCoda")
+//	public String prendiCodaMocked() {
+//		
+//		AbstractApplicationContext context = new AnnotationConfigApplicationContext(JMSConfiguration.class);
+//		MessageReceiver messageReceiver = (MessageReceiver) context.getBean("messageReceiver");
+//		RichiestaConsegna riCon= new RichiestaConsegna();
+//		try {
+//			riCon = messageReceiver.receiveMessage();
+//		} catch (MessageConversionException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (JMSException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		((AbstractApplicationContext) context).close();
+//		try {
+//			this.richiestaConsegnaValidate.validate(riCon, true);
+//			this.richiestaConsegnaService.save(riCon);
+//			return "salvato \""+riCon+"\" nel database";
+//		}  catch (RequiredFieldError e) {
+//			return e.getDescription(e);
+//		} catch (MaxLengthError e) {
+//			return e.getDescription(e);
+//		} catch (UniqueFieldError e) {
+//			return e.getDescription(e);
+//		} catch (AfterDateError e) {
+//			return e.getDescription(e);
+//		} 
+//	}
 	
 //	@RequestMapping("/consegne/resoconto")
 //	public ModelAndView findConsegne() {

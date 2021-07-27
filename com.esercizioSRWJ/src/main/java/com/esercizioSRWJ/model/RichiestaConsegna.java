@@ -31,6 +31,13 @@ public class RichiestaConsegna implements Serializable{
 		super();
 	}
 	
+	public RichiestaConsegna(String id) {
+		this.codiceCollo = id;
+		this.peso = 10D;
+		this.prezzoConsegna = 10.5D;
+		this.dtCreation = LocalDateTime.now();
+	}
+	
 	public RichiestaConsegna(String codiceCollo, Double peso, Double prezzoConsegna) {
 		super();
 		this.codiceCollo = codiceCollo;
@@ -49,36 +56,40 @@ public class RichiestaConsegna implements Serializable{
 	public String getCodiceCollo() {
 		return codiceCollo;
 	}
+
 	public void setCodiceCollo(String codiceCollo) {
 		this.codiceCollo = codiceCollo;
 	}
+
 	public Double getPeso() {
 		return peso;
 	}
+
 	public void setPeso(Double peso) {
 		this.peso = peso;
 	}
+
 	public Double getPrezzoConsegna() {
 		return prezzoConsegna;
 	}
+
 	public void setPrezzoConsegna(Double prezzoConsegna) {
 		this.prezzoConsegna = prezzoConsegna;
 	}
+
 	public LocalDateTime getDtCreation() {
 		return dtCreation;
 	}
+
 	public void setDtCreation(LocalDateTime dtCreation) {
 		this.dtCreation = dtCreation;
 	}
-	@Override
-	public String toString() {
-		return "RichiestaConsegna [codiceCollo=" + codiceCollo + ", peso=" + peso + ", prezzoConsegna=" + prezzoConsegna
-				+ ", dtCreation=" + dtCreation + "]";
-	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(codiceCollo);
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -90,6 +101,14 @@ public class RichiestaConsegna implements Serializable{
 		RichiestaConsegna other = (RichiestaConsegna) obj;
 		return Objects.equals(codiceCollo, other.codiceCollo);
 	}
+
+	@Override
+	public String toString() {
+		return "RichiestaConsegna [codiceCollo=" + codiceCollo + ", peso=" + peso + ", prezzoConsegna=" + prezzoConsegna
+				+ ", dtCreation=" + dtCreation + "]";
+	}
+
+	
 	
 	
 

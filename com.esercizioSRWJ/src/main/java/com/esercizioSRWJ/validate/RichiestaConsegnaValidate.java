@@ -20,7 +20,7 @@ public class RichiestaConsegnaValidate {
 	private Integer lunghezzaCodiceCollo=10;
 	private Integer lunghezzaPeso=10;
 	private Integer lunghezzaPrezzoConsegna=6;
-	private Integer lunghezzaDtCreation=10;
+	private Integer lunghezzaDtCreation=25;
 	
 	@Autowired
 	private RichiestaConsegnaService richiestaConsegnaService;
