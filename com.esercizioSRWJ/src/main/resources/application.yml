@@ -1,0 +1,51 @@
+#CONFIGURAZIONE POSTGRESQL
+spring:
+  datasource :
+    url: jdbc:postgresql://localhost:5432/esercizioSRWJ
+    username: test
+    password: test123
+    driver-class-name: org.postgresql.Driver
+
+# per tenere la connessione attiva anche se in stato inattivo
+    testWhileIdle: true
+    validationQuery: SELECT 1
+
+#log per ogni query
+#spring.jpa.show-sql: true
+#hibernate auto ddl
+#spring.jpa.hibernate.ddl-auto: create-drop
+
+#nomenclatura
+  jpa:
+    hibernate:
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
+        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+
+#generazione di sql ottimizzato per specifio DBMS
+    properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+
+
+#CONFIGURAZIONE ACTIVEMQ
+  activemq:
+    in-memory: false
+    pool.enabled: false
+    user: admin
+    password: admin
+#spring.activemq.packages.trusted=<com.esercizioSRWJ>
+activemq.broker-url: tcp://localhost:61616
+
+
+#ESERCIZIO CONFIGURAZIONI
+
+my:
+  greeting: Hello
+  list.value: Francesco, Andrea
+  esMapValues: "{connectionString:'url db', userName:'userName', password:'password'}"
+
+db:
+  connection: "{connectionString:'url db', userName:'userName', password:'password'}"
+  host: 127.0.0.1
+  port: 5432
+
+#management.endpoints.web.exposure.include=

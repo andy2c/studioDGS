@@ -1,10 +1,14 @@
 package com.esercizioSRWJ.controller;
 
 
+import java.util.List;
+import java.util.Map;
+
 import javax.jms.JMSException;
 import javax.jms.Queue;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.jms.core.JmsTemplate;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.esercizioSRWJ.config.Settings;
 import com.esercizioSRWJ.dto.ResocontoConsegneDTO;
 import com.esercizioSRWJ.exception.AfterDateError;
 import com.esercizioSRWJ.exception.MaxLengthError;
@@ -38,6 +43,17 @@ public class RichiestaConsegnaController {
 	private RichiestaConsegnaService richiestaConsegnaService;
 	private RichiestaConsegnaValidate richiestaConsegnaValidate;
 	
+	@Value("${my.greeting: hello}")
+	private String greetingMessage;
+	
+	@Value("${my.list.value: Francesco}")
+	private List<String> listGreetings;
+	
+	@Value("#{${my.esMapValues}}")
+	private Map<String, String> esMap;
+	
+	@Autowired
+	private Settings settings;
 	
 	@Autowired
 	public RichiestaConsegnaController(JmsTemplate jmsTemplate, 
@@ -56,7 +72,12 @@ public class RichiestaConsegnaController {
 
 	@RequestMapping("/hello")
 	public String hello() {
-		return "hello";
+		return this.greetingMessage+" "+this.listGreetings+this.esMap;
+	}
+	
+	@RequestMapping("/settings")
+	public String setting() {
+		return this.settings.getConnection();
 	}
 	
 	@RequestMapping("/goHome")
