@@ -1,4 +1,4 @@
-package com.esercizioSRWJ.component;
+package com.esercizioSRWJ.jms;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -24,14 +24,15 @@ import com.esercizioSRWJ.validate.RichiestaConsegnaValidate;
 public class Listener {
 	
 	RichiestaConsegnaService riConSer;
-	RichiestaConsegnaValidate riConVal;
+//	RichiestaConsegnaValidate riConVal;
 	
 	@Autowired
-	public Listener(RichiestaConsegnaService riConSer,
-					RichiestaConsegnaValidate riConVal) {
+	public Listener(RichiestaConsegnaService riConSer
+//				, RichiestaConsegnaValidate riConVal
+			){
 		super();
 		this.riConSer = riConSer;
-		this.riConVal = riConVal;
+//		this.riConVal = riConVal;
 	}
 	
 	
@@ -39,22 +40,19 @@ public class Listener {
     @JmsListener(destination = "standalone.queue")
     public void consume(RichiestaConsegna riCon) {
     	
-    	try {
-			this.riConVal.validate(riCon, true);
+//    	try {
+//			this.riConVal.validate(riCon, true);
 	    	this.riConSer.save(riCon);
-	        System.out.println("salvato: " + riCon);
-		} catch (RequiredFieldError e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MaxLengthError e) {
-			System.out.println(e.getDescription(e));
-		} catch (UniqueFieldError e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (AfterDateError e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//	        System.out.println("salvato: " + riCon);
+//		} catch (RequiredFieldError e) {
+//			System.out.println(e.getDescription(e));
+//		} catch (MaxLengthError e) {
+//			System.out.println(e.getDescription(e));
+//		} catch (UniqueFieldError e) {
+//			System.out.println(e.getDescription(e));
+//		} catch (AfterDateError e) {
+//			System.out.println(e.getDescription(e));
+//		}
         
     }
 }

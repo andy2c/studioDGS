@@ -1,15 +1,10 @@
 package com.esercizioSRWJ.exception;
 
 public class MaxLengthError extends FieldError {
-	private int maxLength;
-	public MaxLengthError(String field,int maxLength) {
-		super(field);
-		this.maxLength=maxLength;
+	public MaxLengthError(String field,Integer maxLength) {
+		super(field, maxLength);
+		this.setMessage("Il campo " + this.field + 
+				" deve essere al massimo di "+ this.maxLength + " caratteri");
 	
 	}
-	public int getMaxLength() {
-		return maxLength;
-	}
-	
-	
 }

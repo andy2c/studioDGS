@@ -51,7 +51,7 @@ public class ResocontoConsegneDTO {
 	
 	@Override
 	public String toString() {
-		return "ResocontoConsegneDTO [prezzoTotale=" + prezzoTotale + ", pesoTotale=" + pesoTotale + ", listaConsegne="
+		return "ResocontoConsegneDTO [prezzoTotale=" + prezzoTotale + ", pesoTotale=" + pesoTotale + ",\r\n listaConsegne="
 				+ listaConsegne + "]";
 	}
 	@Override

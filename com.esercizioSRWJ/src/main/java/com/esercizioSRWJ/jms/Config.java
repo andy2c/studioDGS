@@ -1,4 +1,4 @@
-package com.esercizioSRWJ.config;
+package com.esercizioSRWJ.jms;
 
 import java.util.Arrays;
 

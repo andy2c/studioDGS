@@ -74,46 +74,10 @@ public class RichiestaConsegnaController {
 	@RequestMapping(method=RequestMethod.GET, value ="/resoconto/{id}")
 	public String mettiInCodaMocked(@PathVariable String id) {
 		RichiestaConsegna riCon = new RichiestaConsegna(id, 10D, 10D);
-
-//		AbstractApplicationContext context = new AnnotationConfigApplicationContext(JMSConfiguration.class);
-//		MessageSender messageSender = context.getBean(MessageSender.class);
-//		messageSender.sendMessage(riCon);
-//		((AbstractApplicationContext) context).close();
 		
 		jmsTemplate.convertAndSend(queue, riCon);
 		return "messaggio aggiunto in coda";
 	}
-	
-//	@RequestMapping(method=RequestMethod.GET, value ="/getCoda")
-//	public String prendiCodaMocked() {
-//		
-//		AbstractApplicationContext context = new AnnotationConfigApplicationContext(JMSConfiguration.class);
-//		MessageReceiver messageReceiver = (MessageReceiver) context.getBean("messageReceiver");
-//		RichiestaConsegna riCon= new RichiestaConsegna();
-//		try {
-//			riCon = messageReceiver.receiveMessage();
-//		} catch (MessageConversionException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (JMSException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		((AbstractApplicationContext) context).close();
-//		try {
-//			this.richiestaConsegnaValidate.validate(riCon, true);
-//			this.richiestaConsegnaService.save(riCon);
-//			return "salvato \""+riCon+"\" nel database";
-//		}  catch (RequiredFieldError e) {
-//			return e.getDescription(e);
-//		} catch (MaxLengthError e) {
-//			return e.getDescription(e);
-//		} catch (UniqueFieldError e) {
-//			return e.getDescription(e);
-//		} catch (AfterDateError e) {
-//			return e.getDescription(e);
-//		} 
-//	}
 	
 //	@RequestMapping("/consegne/resoconto")
 //	public ModelAndView findConsegne() {
@@ -130,82 +94,54 @@ public class RichiestaConsegnaController {
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, value ="/saveConsegna")
-	public String saveConsegna(@RequestBody RichiestaConsegna riCon) {
-		try {
+	public String saveConsegna(@RequestBody RichiestaConsegna riCon) 
+			throws RequiredFieldError, MaxLengthError, UniqueFieldError, AfterDateError {
+//		try {
 			this.richiestaConsegnaValidate.validate(riCon, true);
 			this.richiestaConsegnaService.save(riCon);
 			return "inserimento effettuato con successo";
-		} catch (RequiredFieldError e) {
-			return e.getDescription(e);
-		} catch (MaxLengthError e) {
-			return e.getDescription(e);
-		} catch (UniqueFieldError e) {
-			return e.getDescription(e);
-		} catch (AfterDateError e) {
-			return e.getDescription(e);
-		} 
+//		}
 //		catch (Exception e) {
-//	        return "errore, contattare l'amministratore";
-//	    }
+//        return "errore, contattare l'amministratore";
+//    }
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, value ="/updateConsegna")
-	public String updateConsegna(@RequestBody RichiestaConsegna riCon) {
-		try {
+	public String updateConsegna(@RequestBody RichiestaConsegna riCon) 
+			throws RequiredFieldError, MaxLengthError, UniqueFieldError, AfterDateError {
+//		try {
 			this.richiestaConsegnaValidate.validate(riCon);
 			this.richiestaConsegnaService.update(riCon);
 			return "aggiornamento effettuato con successo";
-		} catch (RequiredFieldError e) {
-			return e.getDescription(e);
-		} catch (MaxLengthError e) {
-			return e.getDescription(e);
-		} catch (UniqueFieldError e) {
-			return e.getDescription(e);
-		} catch (AfterDateError e) {
-			return e.getDescription(e);
-		} 
+//		} 
 //		catch (Exception e) {
-//	        return "errore, contattare l'amministratore";
-//	    }
+//        return "errore, contattare l'amministratore";
+//    }
 	}
 	
 	@RequestMapping(method=RequestMethod.GET, value ="/saveConsegna/{id}")
-	public String saveConsegnaMocked(@PathVariable String id) {
+	public String saveConsegnaMocked(@PathVariable String id) 
+			throws UniqueFieldError, RequiredFieldError, MaxLengthError, AfterDateError {
 		RichiestaConsegna riCon = new RichiestaConsegna(id, 10D, 10D);
-		try {
+//		try {
 			this.richiestaConsegnaValidate.validate(riCon, true);
 			this.richiestaConsegnaService.save(riCon);
 			return "inserimento effettuato con successo";
-		} catch (RequiredFieldError e) {
-			return e.getDescription(e);
-		} catch (MaxLengthError e) {
-			return e.getDescription(e);
-		} catch (UniqueFieldError e) {
-			return e.getDescription(e);
-		} catch (AfterDateError e) {
-			return e.getDescription(e);
-		} 
+//		} 
 //		catch (Exception e) {
 //	        return "errore, contattare l'amministratore";
 //	    }
 	}
 	
 	@RequestMapping(method=RequestMethod.GET, value ="/updateConsegna/{id}")
-	public String updateConsegnaMocked(@PathVariable String id) {
-		RichiestaConsegna riCon = new RichiestaConsegna(id, 10D, 10D);
-		try {
+	public String updateConsegnaMocked(@PathVariable String id) 
+			throws RequiredFieldError, MaxLengthError, UniqueFieldError, AfterDateError {
+		RichiestaConsegna riCon = new RichiestaConsegna(id, 15D, 15D);
+//		try {
 			this.richiestaConsegnaValidate.validate(riCon);
 			this.richiestaConsegnaService.update(riCon);
 			return "aggiornamento effettuato con successo";
-		} catch (RequiredFieldError e) {
-			return e.getDescription(e);
-		} catch (MaxLengthError e) {
-			return e.getDescription(e);
-		} catch (UniqueFieldError e) {
-			return e.getDescription(e);
-		} catch (AfterDateError e) {
-			return e.getDescription(e);
-		} 
+//		} 
 //		catch (Exception e) {
 //	        return "errore, contattare l'amministratore";
 //	    }
@@ -215,43 +151,39 @@ public class RichiestaConsegnaController {
 	public String getConsegnaMocked(@PathVariable String id) {
 		if(this.richiestaConsegnaService.findById(id) != null)
 			return "consegna con id "+id+" : "+this.richiestaConsegnaService.findById(id);
-		else return "consegna non trovata";
+		else return "consegna non trovata"; //cambia con response entity
 	}
 	
 	@RequestMapping(method=RequestMethod.DELETE, value ="/delete/{id}")
-	public String deleteTopic(@PathVariable String id) {
+	public String deleteTopic(@PathVariable String id) 
+			throws RequiredFieldError, MaxLengthError, UniqueFieldError {
 		try {
 			this.richiestaConsegnaValidate.validateDelete(id);
 			this.richiestaConsegnaService.delete(id);
 			return "eliminato con successo";
-		} catch (RequiredFieldError e) {
-			return e.getDescription(e);
-		} catch (MaxLengthError e) {
-			return e.getDescription(e);
-		} catch (UniqueFieldError e) {
-			return e.getDescription(e);
-		}
+		} 
 //		catch (Exception e) {
 //        return "errore, contattare l'amministratore";
 //    }
+		finally {
+			
+		}
 	}
 	
 	@RequestMapping(method=RequestMethod.GET, value ="/delete/{id}")
-	public String deleteTopicMocked(@PathVariable String id) {
+	public String deleteTopicMocked(@PathVariable String id) 
+			throws RequiredFieldError, MaxLengthError, UniqueFieldError {
 		try {
 			this.richiestaConsegnaValidate.validateDelete(id);
 			this.richiestaConsegnaService.delete(id);
 			return "eliminato con successo";
-		} catch (RequiredFieldError e) {
-			return e.getDescription(e);
-		} catch (MaxLengthError e) {
-			return e.getDescription(e);
-		} catch (UniqueFieldError e) {
-			return e.getDescription(e);
-		}
+		} 
 //		catch (Exception e) {
 //        return "errore, contattare l'amministratore";
 //    }
+		finally {
+			
+		}
 	}
 	
 }
