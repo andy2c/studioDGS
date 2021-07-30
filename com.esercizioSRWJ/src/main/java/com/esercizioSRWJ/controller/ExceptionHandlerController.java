@@ -2,6 +2,7 @@ package com.esercizioSRWJ.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -49,6 +50,11 @@ public class ExceptionHandlerController {
 	@ExceptionHandler(value = UniqueFieldError.class)
 	public ResponseEntity<Object> exception(UniqueFieldError e){
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
+	}
+	
+	@ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
+	public ResponseEntity<Object> exception(HttpRequestMethodNotSupportedException e){
+		return new ResponseEntity<>(e.getMessage(), HttpStatus.METHOD_NOT_ALLOWED);
 	}
 
 }

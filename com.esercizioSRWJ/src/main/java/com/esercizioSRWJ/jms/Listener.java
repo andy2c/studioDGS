@@ -15,6 +15,7 @@ import com.esercizioSRWJ.exception.MaxLengthError;
 import com.esercizioSRWJ.exception.RequiredFieldError;
 import com.esercizioSRWJ.exception.UniqueFieldError;
 import com.esercizioSRWJ.model.RichiestaConsegna;
+import com.esercizioSRWJ.service.DbService;
 import com.esercizioSRWJ.service.RichiestaConsegnaService;
 import com.esercizioSRWJ.validate.RichiestaConsegnaValidate;
 
@@ -23,15 +24,15 @@ import com.esercizioSRWJ.validate.RichiestaConsegnaValidate;
 @Component
 public class Listener {
 	
-	RichiestaConsegnaService riConSer;
+	DbService dbService;
 //	RichiestaConsegnaValidate riConVal;
 	
 	@Autowired
-	public Listener(RichiestaConsegnaService riConSer
+	public Listener(DbService dbService
 //				, RichiestaConsegnaValidate riConVal
 			){
 		super();
-		this.riConSer = riConSer;
+		this.dbService = dbService;
 //		this.riConVal = riConVal;
 	}
 	
@@ -42,7 +43,21 @@ public class Listener {
     	
 //    	try {
 //			this.riConVal.validate(riCon, true);
-	    	this.riConSer.save(riCon);
+	    	try {
+				this.dbService.save(riCon);
+			} catch (RequiredFieldError e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (MaxLengthError e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (UniqueFieldError e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (AfterDateError e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 //	        System.out.println("salvato: " + riCon);
 //		} catch (RequiredFieldError e) {
 //			System.out.println(e.getDescription(e));

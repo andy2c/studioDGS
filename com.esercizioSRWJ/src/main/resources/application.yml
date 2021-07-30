@@ -48,4 +48,6 @@ db:
   host: 127.0.0.1
   port: 5432
 
+spring.profiles.active: test
+
 #management.endpoints.web.exposure.include=

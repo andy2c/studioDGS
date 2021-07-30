@@ -4,15 +4,9 @@ package com.esercizioSRWJ.controller;
 import java.util.List;
 import java.util.Map;
 
-import javax.jms.JMSException;
-import javax.jms.Queue;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.support.converter.MessageConversionException;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,8 +21,8 @@ import com.esercizioSRWJ.exception.MaxLengthError;
 import com.esercizioSRWJ.exception.RequiredFieldError;
 import com.esercizioSRWJ.exception.UniqueFieldError;
 import com.esercizioSRWJ.model.RichiestaConsegna;
-import com.esercizioSRWJ.service.RichiestaConsegnaService;
-import com.esercizioSRWJ.validate.RichiestaConsegnaValidate;
+import com.esercizioSRWJ.service.DbService;
+import com.esercizioSRWJ.service.JmsPublisher;
 
 
 @RestController
@@ -37,11 +31,8 @@ public class RichiestaConsegnaController {
 	
 	//SETTAGGIO ELEMETI CLASSSE
 	
-
-	private JmsTemplate jmsTemplate;
-	private Queue queue;
-	private RichiestaConsegnaService richiestaConsegnaService;
-	private RichiestaConsegnaValidate richiestaConsegnaValidate;
+	private DbService dbService;
+	private JmsPublisher jmsPublisher;
 	
 	@Value("${my.greeting: hello}")
 	private String greetingMessage;
@@ -53,32 +44,26 @@ public class RichiestaConsegnaController {
 	private Map<String, String> esMap;
 	
 	@Autowired
+	private Environment env;
+	
+	@Autowired
 	private Settings settings;
 	
 	@Autowired
-	public RichiestaConsegnaController(JmsTemplate jmsTemplate, 
-										Queue queue,
-										RichiestaConsegnaService richiestaConsegnaService, 
-										RichiestaConsegnaValidate richiestaConsegnaValidate) {
+	public RichiestaConsegnaController(DbService dbService, 
+									JmsPublisher jmsPublisher) {
 		super();
-		this.jmsTemplate = jmsTemplate;
-		this.queue = queue;
-		this.richiestaConsegnaService = richiestaConsegnaService;
-		this.richiestaConsegnaValidate = richiestaConsegnaValidate;
-	}
+		this.dbService = dbService;
+		this.jmsPublisher = jmsPublisher;
+}
+	
+	
 	
 	
 	// MAPPATURA REST
-
-	@RequestMapping("/hello")
-	public String hello() {
-		return this.greetingMessage+" "+this.listGreetings+this.esMap;
-	}
 	
-	@RequestMapping("/settings")
-	public String setting() {
-		return this.settings.getConnection();
-	}
+	
+	//INIZIO RICHIESTE TRACCIA
 	
 	@RequestMapping("/goHome")
 	public ModelAndView goHome() {
@@ -88,15 +73,15 @@ public class RichiestaConsegnaController {
 	
 	@RequestMapping(method=RequestMethod.PUT, value ="/resoconto")
 	public String mettiInCoda(@RequestBody RichiestaConsegna riCon) {
-		jmsTemplate.convertAndSend(queue, riCon);
+		this.jmsPublisher.mettiInCoda(riCon);
 		return "messaggio aggiunto in coda";
 	}
 	
 	@RequestMapping(method=RequestMethod.GET, value ="/resoconto/{id}")
 	public String mettiInCodaMocked(@PathVariable String id) {
 		RichiestaConsegna riCon = new RichiestaConsegna(id, 10D, 10D);
-		
-		jmsTemplate.convertAndSend(queue, riCon);
+
+		this.jmsPublisher.mettiInCoda(riCon);
 		return "messaggio aggiunto in coda";
 	}
 	
@@ -110,101 +95,79 @@ public class RichiestaConsegnaController {
 	
 	@RequestMapping("/consegne/resoconto")
 	public String findAllConsegne() {
-		ResocontoConsegneDTO resocontoDTO = new ResocontoConsegneDTO(this.richiestaConsegnaService.findAll());
+		ResocontoConsegneDTO resocontoDTO = new ResocontoConsegneDTO(this.dbService.findAll());
 		return "resoconto consegne : "+resocontoDTO;
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, value ="/saveConsegna")
 	public String saveConsegna(@RequestBody RichiestaConsegna riCon) 
-			throws RequiredFieldError, MaxLengthError, UniqueFieldError, AfterDateError {
-//		try {
-			this.richiestaConsegnaValidate.validate(riCon, true);
-			this.richiestaConsegnaService.save(riCon);
+		throws RequiredFieldError, MaxLengthError, UniqueFieldError, AfterDateError {
+			this.dbService.save(riCon);
 			return "inserimento effettuato con successo";
-//		}
-//		catch (Exception e) {
-//        return "errore, contattare l'amministratore";
-//    }
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, value ="/updateConsegna")
 	public String updateConsegna(@RequestBody RichiestaConsegna riCon) 
-			throws RequiredFieldError, MaxLengthError, UniqueFieldError, AfterDateError {
-//		try {
-			this.richiestaConsegnaValidate.validate(riCon);
-			this.richiestaConsegnaService.update(riCon);
+		throws RequiredFieldError, MaxLengthError, UniqueFieldError, AfterDateError {
+			this.dbService.update(riCon);
 			return "aggiornamento effettuato con successo";
-//		} 
-//		catch (Exception e) {
-//        return "errore, contattare l'amministratore";
-//    }
 	}
 	
 	@RequestMapping(method=RequestMethod.GET, value ="/saveConsegna/{id}")
 	public String saveConsegnaMocked(@PathVariable String id) 
-			throws UniqueFieldError, RequiredFieldError, MaxLengthError, AfterDateError {
-		RichiestaConsegna riCon = new RichiestaConsegna(id, 10D, 10D);
-//		try {
-			this.richiestaConsegnaValidate.validate(riCon, true);
-			this.richiestaConsegnaService.save(riCon);
+		throws UniqueFieldError, RequiredFieldError, MaxLengthError, AfterDateError {
+			RichiestaConsegna riCon = new RichiestaConsegna(id, 10D, 10D);
+
+			this.dbService.save(riCon);
 			return "inserimento effettuato con successo";
-//		} 
-//		catch (Exception e) {
-//	        return "errore, contattare l'amministratore";
-//	    }
 	}
 	
 	@RequestMapping(method=RequestMethod.GET, value ="/updateConsegna/{id}")
 	public String updateConsegnaMocked(@PathVariable String id) 
-			throws RequiredFieldError, MaxLengthError, UniqueFieldError, AfterDateError {
-		RichiestaConsegna riCon = new RichiestaConsegna(id, 15D, 15D);
-//		try {
-			this.richiestaConsegnaValidate.validate(riCon);
-			this.richiestaConsegnaService.update(riCon);
+		throws RequiredFieldError, MaxLengthError, UniqueFieldError, AfterDateError {
+			RichiestaConsegna riCon = new RichiestaConsegna(id, 15D, 15D);
+
+			this.dbService.update(riCon);
 			return "aggiornamento effettuato con successo";
-//		} 
-//		catch (Exception e) {
-//	        return "errore, contattare l'amministratore";
-//	    }
 	}
 	
 	@RequestMapping(method=RequestMethod.GET, value ="/get/{id}")
-	public String getConsegnaMocked(@PathVariable String id) {
-		if(this.richiestaConsegnaService.findById(id) != null)
-			return "consegna con id "+id+" : "+this.richiestaConsegnaService.findById(id);
-		else return "consegna non trovata"; //cambia con response entity
+	public String getConsegnaMocked(@PathVariable String id) 
+		throws RequiredFieldError, MaxLengthError, UniqueFieldError {
+			if(this.dbService.findById(id) != null)
+				return "consegna con id "+id+" : "+this.dbService.findById(id);
+			else return "consegna non trovata"; //cambia con response entity
 	}
 	
 	@RequestMapping(method=RequestMethod.DELETE, value ="/delete/{id}")
 	public String deleteTopic(@PathVariable String id) 
-			throws RequiredFieldError, MaxLengthError, UniqueFieldError {
-		try {
-			this.richiestaConsegnaValidate.validateDelete(id);
-			this.richiestaConsegnaService.delete(id);
+		throws RequiredFieldError, MaxLengthError, UniqueFieldError {
+			this.dbService.delete(id);
 			return "eliminato con successo";
-		} 
-//		catch (Exception e) {
-//        return "errore, contattare l'amministratore";
-//    }
-		finally {
-			
-		}
 	}
 	
 	@RequestMapping(method=RequestMethod.GET, value ="/delete/{id}")
 	public String deleteTopicMocked(@PathVariable String id) 
-			throws RequiredFieldError, MaxLengthError, UniqueFieldError {
-		try {
-			this.richiestaConsegnaValidate.validateDelete(id);
-			this.richiestaConsegnaService.delete(id);
+		throws RequiredFieldError, MaxLengthError, UniqueFieldError {
+			this.dbService.delete(id);
 			return "eliminato con successo";
-		} 
-//		catch (Exception e) {
-//        return "errore, contattare l'amministratore";
-//    }
-		finally {
-			
-		}
+	}
+	
+	//SOLO PER ESERCIZIO PERSONALE START
+
+	@RequestMapping("/hello")
+	public String hello() {
+		return this.greetingMessage+" "+this.listGreetings+this.esMap;
+	}
+
+	@RequestMapping("/settings")
+	public String setting() {
+		return this.settings.getConnection();
+	}
+	
+	@RequestMapping("env")
+	public String envDetails() {
+		return env.toString();
 	}
 	
 }

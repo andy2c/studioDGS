@@ -50,7 +50,7 @@ public class RichiestaConsegnaValidate {
 //			}
 		
 		this.validateAttributePK(model.getCodiceCollo(), "codice collo", 
-									checkDuplicate, lunghezzaCodiceCollo);
+									checkDuplicate);
 		this.validateAttribute(model.getPeso(), "peso",this.lunghezzaPeso);
 		this.validateAttribute(model.getPrezzoConsegna(), "prezzo consegna", 
 											this.lunghezzaPrezzoConsegna);
@@ -58,17 +58,21 @@ public class RichiestaConsegnaValidate {
 											this.lunghezzaDtCreation);
 	}
 	
+	public void validateAttributePK(String attributeContent, Boolean checkDuplicate) 
+					throws RequiredFieldError, MaxLengthError, UniqueFieldError {
+		this.validateAttributePK(attributeContent, "codice collo", checkDuplicate);
+	}
+	
 	public void validateAttributePK(String attributeContent, 
 									String attributeName,
-									Boolean checkDuplicate,
-									Integer attributeLength) 
+									Boolean checkDuplicate) 
 				throws RequiredFieldError, MaxLengthError, UniqueFieldError {
 		
 		if(GeneralUtilities.checkIfNull(attributeContent))
 			throw new RequiredFieldError(attributeName);
 		else {
-			if(GeneralUtilities.checkIfLonger(attributeContent, attributeLength))
-				throw new MaxLengthError(attributeName, attributeLength);
+			if(GeneralUtilities.checkIfLonger(attributeContent, lunghezzaCodiceCollo))
+				throw new MaxLengthError(attributeName, lunghezzaCodiceCollo);
 			if(checkDuplicate) {
 				if(richiestaConsegnaService.findById(attributeContent) != null)
 					throw new UniqueFieldError(attributeName);
@@ -104,7 +108,7 @@ public class RichiestaConsegnaValidate {
 	public void validateDelete(String pk) 
 			throws RequiredFieldError, MaxLengthError, UniqueFieldError {
 		
-		this.validateAttributePK(pk, "codice collo", null, lunghezzaCodiceCollo);
+		this.validateAttributePK(pk, "codice collo", null);
 	}
 
 }
