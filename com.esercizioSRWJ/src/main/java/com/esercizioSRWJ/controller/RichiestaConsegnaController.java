@@ -7,6 +7,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -97,6 +99,11 @@ public class RichiestaConsegnaController {
 	public String findAllConsegne() {
 		ResocontoConsegneDTO resocontoDTO = new ResocontoConsegneDTO(this.dbService.findAll());
 		return "resoconto consegne : "+resocontoDTO;
+	}
+	
+	@RequestMapping("/consegne/resocontoReEn")
+	public ResponseEntity<ResocontoConsegneDTO> findAllConsegneResponseEntity() {
+		return ResponseEntity.ok().headers(new HttpHeaders()).body(new ResocontoConsegneDTO(this.dbService.findAll()));
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, value ="/saveConsegna")
