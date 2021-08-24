@@ -177,4 +177,15 @@ public class RichiestaConsegnaController {
 		return env.toString();
 	}
 	
+	//ESEMPI QUERY BUILDER
+	
+		//esempio CriteriaBuilder.In
+	
+	@RequestMapping(method=RequestMethod.GET, value ="/queryBuilder/{peso}")
+	public String getConsegnaQBMocked(@PathVariable String peso) {
+			if(this.dbService.findByPeso(peso).size()>0)
+				return "consegna con peso "+peso+" : "+this.dbService.findByPeso(peso);
+			else return "consegna non trovata";
+	}
+	
 }
