@@ -7,24 +7,37 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
+import com.esercizioSRWJ.csv.LocalDateConverter;
+import com.opencsv.bean.CsvBindByPosition;
+import com.opencsv.bean.CsvCustomBindByPosition;
+
 @Entity
+@NamedQuery(name = "RichiestaConsegna.findByCodiceCollo", 
+			query = "SELECT r FROM RichiestaConsegna r WHERE r.codiceCollo = :codice ")
+@NamedQuery(name = "RichiestaConsegna.findAllWithoutDate",
+			query = " select rc.codiceCollo, rc.peso, rc.prezzoConsegna  from RichiestaConsegna rc ")
 @Table(name="richiesta_consegna")
 public class RichiestaConsegna implements Serializable{
 	
 	//immagino che codiceCollo sia la PK  e che quindi debba essere costruita o letta in backend
 	@Id
 	@Column(name="codice_collo")
+//	@CsvBindByPosition(position = 0)
 	private String codiceCollo;
 	
 	@Column(name="peso")
+//	@CsvBindByPosition(position = 1)
 	private Double peso;
 	
 	@Column(name="prezzo_consegna")
+//	@CsvBindByPosition(position = 2)
 	private Double prezzoConsegna;
 	
 	@Column(name="dt_creation")
+//	@CsvCustomBindByPosition(position = 3, converter = LocalDateConverter.class)
 	private LocalDateTime dtCreation;
 	
 	public RichiestaConsegna() {

@@ -9,7 +9,6 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -76,7 +75,6 @@ public class DbService {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<RichiestaConsegna> cq = cb.createQuery(RichiestaConsegna.class);
-		
 		Root<RichiestaConsegna> root = cq.from(RichiestaConsegna.class);
 		
 		List conditions = Arrays.asList(new String [] {peso});
@@ -90,6 +88,83 @@ public class DbService {
 		TypedQuery<RichiestaConsegna> query = em.createQuery(select);
 		
 		return query.getResultList();
+		
+		
+		/*
+		 * esempio con join
+		 * 
+		    final Root<Tabella> tabellaRoot = criteriaQuery.from(Tabella.class);
+			Join<Tabella, TabellaPerJoin> join1 = tabellaRoot.join("joinColumnName", JoinType.LEFT);
+			
+			Predicate predicate = criteriaBuilder.equal(TabellaPerJoin.<String> get("recipient"), recepientValue;
+			criteria.add(predicate);
+			criteriaQuery.where(predicate);
+			criteriaQuery.distinct(true);
+		 */
     }
+	
+	
+		//esempio CriteriaBuilder.In con più condizioni where
+	
+	public List<RichiestaConsegna> findByPesoAndPrezzoConsegna(String peso, String prezzoCon){
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<RichiestaConsegna> cq = cb.createQuery(RichiestaConsegna.class);
+		
+		Root<RichiestaConsegna> root = cq.from(RichiestaConsegna.class);
+		
+		cq.where(cb.and(
+				cb.equal(root.get("peso"), peso),
+				cb.equal(root.get("prezzoConsegna"), prezzoCon)
+				));
+		
+		CriteriaQuery<RichiestaConsegna> select = cq.select(root);
+		TypedQuery<RichiestaConsegna> query = em.createQuery(select);
+		
+		return query.getResultList();
+		
+	}
+	
+		//esempio Expression.In
+	
+	public List<RichiestaConsegna> findByPrezzoConsegna(String prezzoCon){
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<RichiestaConsegna> cq = cb.createQuery(RichiestaConsegna.class);
+		Root<RichiestaConsegna> root = cq.from(RichiestaConsegna.class);
+		
+		return em.createQuery(
+					cq.select(root).where(
+						root.get("prezzoConsegna").in(prezzoCon)
+						)).getResultList();
+		
+	}
+	
+		//esempio named query - l'effettiva named query è in model.RichiestaConsegna
+	
+	public List<RichiestaConsegna> findByCodiceCollo(String codiceCollo) {
+		TypedQuery<RichiestaConsegna> q = em.createNamedQuery("RichiestaConsegna.findByCodiceCollo", 
+				RichiestaConsegna.class);
+		q.setParameter("codice", codiceCollo);
+		return q.getResultList();
+	}
+	
+	public List<RichiestaConsegna> findAllWithoutDate(){
+		TypedQuery<RichiestaConsegna> q = em.createNamedQuery("RichiestaConsegna.findAllWithoutDate", 
+				RichiestaConsegna.class);
+		return q.getResultList();
+		
+	}
+	
+		//esempio native query
+	
+	public List<RichiestaConsegna> findByPesoAndPrezzoOrderAScelta(String peso,
+																	String prezzo,
+																	String orderBy){
+		String query = " SELECT * FROM richiesta_consegna r "
+						+ " WHERE peso >= "+peso+" AND prezzo_consegna >= "+prezzo 
+						+ " ORDER BY "+orderBy;
+		return em.createNativeQuery(query, RichiestaConsegna.class).getResultList();
+	}
 
 }

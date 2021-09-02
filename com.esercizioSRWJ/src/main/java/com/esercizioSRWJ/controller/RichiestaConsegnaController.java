@@ -1,6 +1,8 @@
 package com.esercizioSRWJ.controller;
 
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -23,8 +25,11 @@ import com.esercizioSRWJ.exception.MaxLengthError;
 import com.esercizioSRWJ.exception.RequiredFieldError;
 import com.esercizioSRWJ.exception.UniqueFieldError;
 import com.esercizioSRWJ.model.RichiestaConsegna;
+import com.esercizioSRWJ.service.CSVService;
 import com.esercizioSRWJ.service.DbService;
 import com.esercizioSRWJ.service.JmsPublisher;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 
 
 @RestController
@@ -35,6 +40,7 @@ public class RichiestaConsegnaController {
 	
 	private DbService dbService;
 	private JmsPublisher jmsPublisher;
+	private CSVService csvService;
 	
 	@Value("${my.greeting: hello}")
 	private String greetingMessage;
@@ -53,10 +59,12 @@ public class RichiestaConsegnaController {
 	
 	@Autowired
 	public RichiestaConsegnaController(DbService dbService, 
-									JmsPublisher jmsPublisher) {
+									JmsPublisher jmsPublisher,
+									CSVService csvService) {
 		super();
 		this.dbService = dbService;
 		this.jmsPublisher = jmsPublisher;
+		this.csvService = csvService;
 }
 	
 	
@@ -182,10 +190,81 @@ public class RichiestaConsegnaController {
 		//esempio CriteriaBuilder.In
 	
 	@RequestMapping(method=RequestMethod.GET, value ="/queryBuilder/{peso}")
-	public String getConsegnaQBMocked(@PathVariable String peso) {
+	public String getConsegnaQB(@PathVariable String peso) {
 			if(this.dbService.findByPeso(peso).size()>0)
 				return "consegna con peso "+peso+" : "+this.dbService.findByPeso(peso);
 			else return "consegna non trovata";
 	}
 	
+		//esempio CriteriaBuilder.In con più condizioni where
+	
+	@RequestMapping(method=RequestMethod.GET, value="/queryBuilder/{peso}/{prezzo}")
+	public String getConsegnaQBMultyWhere(@PathVariable String peso, @PathVariable String prezzo) {
+		if(this.dbService.findByPesoAndPrezzoConsegna(peso, prezzo).size()>0)
+			return "consegna con peso "+peso+" e prezzo consegna "+prezzo+" : "+this.dbService.findByPeso(peso);
+		else return "consegna non trovata";
+	}
+	
+		//esempio Expression.In
+	
+	@RequestMapping(method=RequestMethod.GET, value="/queryBuilderExp/{prezzo}")
+	public String getConsegnaQBExpression(@PathVariable String prezzo) {
+		if(this.dbService.findByPrezzoConsegna(prezzo).size()>0)
+			return "consegna con prezzo consegna "+prezzo+" : "+this.dbService.findByPrezzoConsegna(prezzo);
+		else return "consegna non trovata";
+	}
+	
+		//esempio named query
+	
+	@RequestMapping(method=RequestMethod.GET, value="/queryBuilderMQ/{codice}")
+	public String getByCodiceColloNamedQuery(@PathVariable String codice) {
+		if(this.dbService.findByCodiceCollo(codice).size()>0)
+			return "consegna con codice collo "+codice+" : "+this.dbService.findByCodiceCollo(codice);
+		else return "consegna non trovata";
+	}
+	
+		//esempio native query
+	
+	@RequestMapping(method=RequestMethod.GET, value="/queryBuilderNQ/{peso}/{prezzo}/{orderBy}")
+	public String getByPesoAndPrezzoNativeQuery(@PathVariable String peso,
+												@PathVariable String prezzo,
+												@PathVariable String orderBy) {
+		if(this.dbService.findByPesoAndPrezzoOrderAScelta(peso, prezzo, orderBy).size()>0)
+			return "lista consegne con peso "+peso+" , prezzo consegna "+prezzo
+					+" e ordinata per "+orderBy+" : "+this.dbService.findByPesoAndPrezzoOrderAScelta(peso, prezzo, orderBy);
+		else return "consegna non trovata";
+	}
+	
+	//ESEMPI CREAZIONE FILE CSV
+	
+		//esempio CsvBindByPosition
+	
+	@RequestMapping(method=RequestMethod.GET, value="/csvPosition")
+	public String writeCSVBindByPosition() {
+//		List<RichiestaConsegna> list = this.dbService.findAllWithoutDate();
+		List<RichiestaConsegna> list = this.dbService.findAll();
+		for(RichiestaConsegna rc : list)
+			rc.setDtCreation(null);
+		try {
+			this.csvService.writeCSV("C:\\lavoro\\dgs\\materiale esempi\\csv","esercizio csv resoconto", list);
+			list=null;
+		} catch (CsvDataTypeMismatchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CsvRequiredFieldEmptyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			return String.valueOf(this.csvService.readCSV("C:\\lavoro\\dgs\\materiale esempi\\csv", "esercizio csv resoconto"));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "errore";
+		}
+
+	}
 }
