@@ -99,6 +99,24 @@ public class SmartCSVWriter {
 		}
 	}
 	
+	public String buffString(Class clazz, Object p) throws IllegalArgumentException, IllegalAccessException {
+		String ret = "";
+		Field[] allFields = clazz.getDeclaredFields();
+		for(Field f: allFields) {
+			Annotation an = f.getAnnotation(FieldPropertiesForCsv.class);
+			FieldPropertiesForCsv fp =(FieldPropertiesForCsv)an;
+			if(fp.bufferRequired()) {
+				f.setAccessible(true);
+				int lenghtBufferToAdd = fp.totalFieldLenght() - String.valueOf(f.get(p)).length();
+				if(lenghtBufferToAdd > 0)
+					for(int i=0; i<lenghtBufferToAdd; i++)
+						ret= ret+f.get(p)+fp.buffer();
+			}	
+		}
+
+		return ret;
+	}
+	
 	public String mapWriter(Object... toWrite) throws IllegalArgumentException, IllegalAccessException {
 		String ret="";
 		Iterator<Object> iter = Stream.of(toWrite).iterator();
