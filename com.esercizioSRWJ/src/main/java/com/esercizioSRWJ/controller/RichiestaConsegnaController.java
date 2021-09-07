@@ -267,4 +267,32 @@ public class RichiestaConsegnaController {
 		}
 
 	}
+	
+	@RequestMapping(method=RequestMethod.GET, value="/csvPosition2")
+	public String writeCSVBindByPosition2() {
+		List<RichiestaConsegna> list = this.dbService.findAll();
+		for(RichiestaConsegna rc : list)
+			rc.setDtCreation(null);
+		try {
+			this.csvService.writeCSV2("C:\\lavoro\\dgs\\materiale esempi\\csv","esercizio csv resoconto", list);
+			list=null;
+		} catch (CsvDataTypeMismatchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CsvRequiredFieldEmptyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			return String.valueOf(this.csvService.readCSV("C:\\lavoro\\dgs\\materiale esempi\\csv", "esercizio csv resoconto"));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "errore";
+		}
+
+	}
 }

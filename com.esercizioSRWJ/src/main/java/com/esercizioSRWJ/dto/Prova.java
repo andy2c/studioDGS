@@ -1,21 +1,27 @@
 package com.esercizioSRWJ.dto;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.esercizioSRWJ.customAnnotaions.FieldPropertiesForCsv;
 import com.esercizioSRWJ.model.RichiestaConsegna;
 import com.opencsv.bean.CsvBindByPosition;
 
 public class Prova {
 	
 	@CsvBindByPosition(position = 0)
+	@FieldPropertiesForCsv(totalFieldLenght = 20)
 	private String codiceCollo;
 	@CsvBindByPosition(position = 2)
+	@FieldPropertiesForCsv(totalFieldLenght = 20)
 	private Double peso;
 	@CsvBindByPosition(position = 3)
+	@FieldPropertiesForCsv(totalFieldLenght = 20, bufferRequired = false)
 	private Double prezzoConsegnna;
 	@CsvBindByPosition(position = 1)
 	private String separatore;

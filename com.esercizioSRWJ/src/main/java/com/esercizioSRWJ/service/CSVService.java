@@ -21,9 +21,40 @@ public class CSVService {
 	@Autowired
 	private SmartCSVReader sr;
 	
+	protected String extension="csv";
+	
 	 public void writeCSV(String path, String nomeFile, List<RichiestaConsegna> listToWrite) throws CsvDataTypeMismatchException, CsvRequiredFieldEmptyException, IOException {
 		 
 		 sw.writeCSVFile(path, nomeFile, listToWrite);
+		 
+//		 File reportFile = new File(reportOutputDir + "/" + reportFileName);
+//		 Writer writer = new PrintWriter(reportFile);
+//		 StatefulBeanToCsv<CSVNamedColumnBean> beanToCsv = new 
+//		                               StatefulBeanToCsvBuilder(writer).build();
+//		 beanToCsv.write( );
+//		 writer.close();
+	}
+	
+	 public void writeCSV2(String path, String nomeFile, List<RichiestaConsegna> listToWrite) throws CsvDataTypeMismatchException, CsvRequiredFieldEmptyException, IOException {
+		 
+		 try {
+			sw.writeCSVFile2(path, nomeFile, extension, listToWrite);
+		} catch (CsvDataTypeMismatchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CsvRequiredFieldEmptyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		 
 //		 File reportFile = new File(reportOutputDir + "/" + reportFileName);
 //		 Writer writer = new PrintWriter(reportFile);

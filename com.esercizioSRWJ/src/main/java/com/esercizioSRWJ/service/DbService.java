@@ -83,6 +83,8 @@ public class DbService {
 		Predicate in = exp.in(conditions);
 		
 		cq.where(in);
+//		cq.where(root.get("peso"));
+
 		
 		CriteriaQuery<RichiestaConsegna> select = cq.select(root);
 		TypedQuery<RichiestaConsegna> query = em.createQuery(select);

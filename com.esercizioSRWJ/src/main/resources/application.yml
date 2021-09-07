@@ -42,13 +42,15 @@ my:
   greeting: Hello
   list.value: Francesco, Andrea
   esMapValues: "{connectionString:'url db', userName:'userName', password:'password'}"
-  position:
-    codice_collo: 0
-    peso: 1
-    separator: 2
-    prezzo_consegna: 3
-    dt_creation: 4
-  separator: ','
+  cvs:
+    position:
+      codice_collo: 0
+      peso: 1
+      separator: 2
+      prezzo_consegna: 3
+      dt_creation: 4
+    separator: ','
+    dateFormat: 'yyyyMMddHHmmss'
 
 db:
   connection: "{connectionString:'url db', userName:'userName', password:'password'}"
