@@ -24,8 +24,14 @@ public class Scheduler {
 	
 	@Async
 	@Scheduled(fixedRate=20*1000)
-	public void reportCurrentTimeWithFiedRate() {
+	public void reportCurrentTimeWithFixedRate() {
 		System.out.println("Current time with fixed rate = "+dateFormat.format(new Date()));
+	}
+	
+	@Async
+	@Scheduled(fixedDelay =30*1000)
+	public void reportCurrentTimeWithFixedDelay() {
+		System.out.println("Current time with fixed delay  = "+dateFormat.format(new Date()));
 	}
 
 }
