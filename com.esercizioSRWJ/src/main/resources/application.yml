@@ -60,6 +60,6 @@ db:
 spring.profiles.active: test
 
 cron:
- expression : "0/5 * 0/4 ? * * "
+ expression : "0/10 * * ? * * "
 
 #management.endpoints.web.exposure.include=
