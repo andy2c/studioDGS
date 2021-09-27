@@ -16,7 +16,7 @@ import com.opencsv.bean.CsvCustomBindByPosition;
 
 @Entity
 @NamedQuery(name = "RichiestaConsegna.findByCodiceCollo", 
-			query = "SELECT r FROM RichiestaConsegna r WHERE r.codiceCollo = :codice ")
+			query = "SELECT r FROM RichiestaConsegna r WHERE r.codiceCollo = :codiceCollo ")
 @NamedQuery(name = "RichiestaConsegna.findAllWithoutDate",
 			query = " select rc.codiceCollo, rc.peso, rc.prezzoConsegna  from RichiestaConsegna rc ")
 @Table(name="richiesta_consegna")

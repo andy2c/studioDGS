@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -39,38 +42,21 @@ public class SmartCSVWriter {
 		writer.close();
 	}
 	
-	public void writeCSVFile2(String path, String nomeFile, String extension, List<RichiestaConsegna> lista) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException, IllegalArgumentException, IllegalAccessException {
+	public void writeCSVFile2(String path, String nomeFile, String extension, List<RichiestaConsegna> lista) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException, IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, InstantiationException {
 		
 		List<Prova2> toWrite = new ArrayList<Prova2>();
 		for(RichiestaConsegna l : lista) {
 			Prova2 p2 = new Prova2(l);
-			try {
-				try {
-					buffInstance(Prova2.class, p2);
-				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InstantiationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} catch (NoSuchFieldException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			buffInstance(Prova2.class, p2);
 			toWrite.add(p2);
 		}
 
 		
 		FileWriter writer = new FileWriter(path+"\\"+nomeFile+"."+extension);
 		for(Prova2 p: toWrite) {
-			writer.write(mapWriter(p, p)+"\r\n");
+//			writer.write(mapWriter(p, p)+"\r\n");
+			String stringToWrite = mapWriter(p, p)+"\r\n";
+			Files.write(Paths.get(path+"\\"+nomeFile+"."+extension), stringToWrite.getBytes(), StandardOpenOption.APPEND);
 		}
 //		Writer writer = new FileWriter(path+"\\"+nomeFile+".csv");
 //		StatefulBeanToCsv<Prova2> beanToCSV = new StatefulBeanToCsvBuilder<Prova2>(writer)
@@ -89,7 +75,7 @@ public class SmartCSVWriter {
 		for(Field f: allFields) {
 			Annotation an = f.getAnnotation(FieldPropertiesForCsv.class);
 			FieldPropertiesForCsv fp =(FieldPropertiesForCsv)an;
-			if(fp.bufferRequired()) {
+			if(fp!= null) {
 				f.setAccessible(true);
 				int lenghtBufferToAdd = fp.totalFieldLenght() - String.valueOf(f.get(p)).length();
 				if(lenghtBufferToAdd > 0)
@@ -104,6 +90,19 @@ public class SmartCSVWriter {
 		Field[] allFields = clazz.getDeclaredFields();
 		for(Field f: allFields) {
 			Annotation an = f.getAnnotation(FieldPropertiesForCsv.class);
+			FieldPropertiesForCsv fp = (FieldPropertiesForCsv)an;
+			if(fp!= null) {
+				f.setAccessible(true);
+				int lenghtBufferToAdd = fp.totalFieldLenght() - String.valueOf(f.get(p)).length();
+				if(lenghtBufferToAdd > 0)
+					for(int i=0; i<lenghtBufferToAdd; i++)
+						ret= ret+f.get(p)+fp.buffer();
+			}
+		}
+		/*
+		Field[] allFields = clazz.getDeclaredFields();
+		for(Field f: allFields) {
+			Annotation an = f.getAnnotation(FieldPropertiesForCsv.class);
 			FieldPropertiesForCsv fp =(FieldPropertiesForCsv)an;
 			if(fp.bufferRequired()) {
 				f.setAccessible(true);
@@ -113,6 +112,7 @@ public class SmartCSVWriter {
 						ret= ret+f.get(p)+fp.buffer();
 			}	
 		}
+		*/
 
 		return ret;
 	}
@@ -127,14 +127,10 @@ public class SmartCSVWriter {
 			
 			for(int i=0;i<allFields.length; i++) {
 				allFields[i].setAccessible(true);
+				ret = ret+String.valueOf(allFields[i].get(obj));
 				if(i<allFields.length-1)
-					ret = ret+String.valueOf(allFields[i].get(obj))+" ";
+					ret = ret+" ";
 			}
-			
-//			for(Field f : allFields) {
-//				f.setAccessible(true);
-//				ret=ret+String.valueOf(f.get(obj))+" ";
-//			}
 			
 			if(iter.hasNext())
 				ret=ret+",";

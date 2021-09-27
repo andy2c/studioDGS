@@ -10,11 +10,11 @@ import com.opencsv.bean.CsvBindByPosition;
 public class Prova2 {
 	
 	@CsvBindByPosition(position = 0)
-	@FieldPropertiesForCsv(totalFieldLenght = 20, buffer = " ", bufferRequired = true)
+	@FieldPropertiesForCsv(totalFieldLenght = 20)
 	private String codiceCollo;
 	
 	@CsvBindByPosition(position = 1)
-	@FieldPropertiesForCsv(totalFieldLenght = 20, buffer = " ", bufferRequired = true)
+	@FieldPropertiesForCsv(totalFieldLenght = 20)
 	private String peso;
 	
 	@CsvBindByPosition(position = 2)
